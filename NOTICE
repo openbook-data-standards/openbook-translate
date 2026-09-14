@@ -1,10 +1,14 @@
 openbook-translate
 Copyright 2026 the OpenBook authors
 
-This product includes OpenBook JSON Schema files copied from
-https://github.com/openbook-data-standards/openbook (directory schema/).
-Those schema files remain licensed under Creative Commons Attribution 4.0
+This product includes OpenBook JSON Schema files and controlled-vocabulary
+files copied from https://github.com/openbook-data-standards/openbook
+(directories schema/ and vocabularies/), vendored under
+src/openbook_translate/schema/ and src/openbook_translate/vocabularies/.
+Those files remain licensed under Creative Commons Attribution 4.0
 International (CC BY 4.0). See the specification repository LICENSE.
+The spec version and commit they were copied from are recorded in
+src/openbook_translate/openbook-spec-version and openbook-spec-commit.
 
 The Python code in this package is licensed under the Apache License 2.0.
 See LICENSE.

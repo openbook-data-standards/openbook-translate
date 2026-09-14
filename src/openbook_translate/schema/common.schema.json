@@ -240,6 +240,13 @@
       ],
       "description": "Throwing/shooting or batting side (Q88). No ISO."
     },
+    "elected": {
+      "enum": [
+        "bat",
+        "bowl"
+      ],
+      "description": "What the toss winner elected (Q159). Leftover English. Not player bats."
+    },
     "side": {
       "enum": [
         "home",
@@ -661,7 +668,10 @@
         "participant",
         "player",
         "lineup",
-        "publisher"
+        "publisher",
+        "stall",
+        "toss",
+        "series"
       ]
     },
     "action": {
@@ -756,8 +766,10 @@
         "handicap",
         "exact-value",
         "correct-score",
-        "yes-no"
-      ]
+        "yes-no",
+        "composite"
+      ],
+      "description": "How a market type is structured. composite = legs that reference other market outcomes (parlay, same-game parlay)."
     },
     "marketCategory": {
       "enum": [

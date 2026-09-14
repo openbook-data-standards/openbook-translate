@@ -1,0 +1,10 @@
+{
+  "openbookVersion": "0.3.0-draft",
+  "sequence": 103900,
+  "dateModified": "2026-09-19T14:00:00Z",
+  "id": "market:same-game-parlay",
+  "name": "Same-Game Parlay",
+  "genre": "combination",
+  "shape": "composite",
+  "category": "same-game-parlay"
+}

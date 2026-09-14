@@ -1,0 +1,35 @@
+{
+  "lastUpdated": "2026-09-19T12:00:00Z",
+  "ttl": 60,
+  "feeds": [
+    {
+      "name": "snapshot",
+      "kind": "snapshot",
+      "url": "https://example.invalid/acme-feeds/snapshot"
+    },
+    {
+      "name": "stream",
+      "kind": "stream",
+      "url": "https://example.invalid/acme-feeds/stream"
+    },
+    {
+      "name": "docs",
+      "kind": "docs",
+      "url": "https://example.invalid/acme-feeds/docs"
+    },
+    {
+      "name": "OpenBook MCP",
+      "kind": "mcp",
+      "id": "openbook-mcp",
+      "schemaUrl": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+      "url": "https://example.invalid/.well-known/mcp.json"
+    },
+    {
+      "name": "settlement plugin",
+      "kind": "plugin",
+      "id": "settlement",
+      "schemaUrl": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+      "url": "https://example.invalid/plugins/settlement/plugin.json"
+    }
+  ]
+}

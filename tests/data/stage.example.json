@@ -1,0 +1,11 @@
+{
+  "openbookVersion": "0.3.0-draft",
+  "id": "ST-QF",
+  "sequence": 104010,
+  "dateModified": "2026-09-01T09:00:00Z",
+  "season": "S-UCL-2025",
+  "name": "Quarter-final",
+  "stageType": "round",
+  "parent": "ST-KO",
+  "order": 3
+}

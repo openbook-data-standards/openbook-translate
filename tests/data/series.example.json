@@ -1,0 +1,25 @@
+{
+  "openbookVersion": "0.3.0-draft",
+  "sequence": 105510,
+  "datePublished": "2026-09-19T14:00:00Z",
+  "publisher": "acme-feeds",
+  "object": "series",
+  "action": "update",
+  "sport": "soccer",
+  "id": "EVT-88213",
+  "changes": {
+    "fixture": "EVT-88213",
+    "stage": "ST-QF",
+    "wins": [
+      {
+        "participant": "T-3",
+        "total": 2
+      },
+      {
+        "participant": "T-11",
+        "total": 1
+      }
+    ],
+    "needed": 4
+  }
+}

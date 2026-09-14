@@ -1,0 +1,31 @@
+{
+  "openbookVersion": "0.3.0-draft",
+  "sequence": 106001,
+  "datePublished": "2026-09-19T14:48:02Z",
+  "publisher": "acme-feeds",
+  "object": "grade",
+  "action": "create",
+  "sport": "soccer",
+  "id": "EVT-88213",
+  "changes": {
+    "gradeId": "GRD-77120",
+    "fixture": "EVT-88213",
+    "segment": "segment:soccer:1st-half",
+    "source": "acme-book",
+    "marketType": "market:total",
+    "line": "1.5",
+    "basis": "goals",
+    "basedOn": 105388,
+    "dateGraded": "2026-09-19T14:48:02Z",
+    "outcomes": [
+      {
+        "side": "over",
+        "result": "win"
+      },
+      {
+        "side": "under",
+        "result": "lose"
+      }
+    ]
+  }
+}
