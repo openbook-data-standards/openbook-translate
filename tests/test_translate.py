@@ -1,23 +1,33 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
 
+from openbook_translate import SPEC_COMMIT, SPEC_VERSION, __version__
 from openbook_translate.abc import Translator
 from openbook_translate.acme import AcmeTranslator
 from openbook_translate.adapters import load
 from openbook_translate.identifier import native_id
-from openbook_translate.types import Documents, Quarantine, Vendor
-
-DATA = Path(__file__).resolve().parent / "data"
-FIXTURE = json.loads((DATA / "fixture.example.json").read_text(encoding="utf-8"))
-MARKET = json.loads((DATA / "market.example.json").read_text(encoding="utf-8"))
+from openbook_translate.types import (
+    OTHER,
+    PARSE_ERROR,
+    REASONS,
+    SCHEMA_INVALID,
+    Documents,
+    Quarantine,
+    Vendor,
+)
 
 
 def _raw(obj: dict) -> bytes:
     return json.dumps(obj).encode("utf-8")
+
+
+def test_package_constants() -> None:
+    assert __version__ == "0.1.0"
+    assert SPEC_VERSION == "0.3.0-draft"
+    assert len(SPEC_COMMIT) == 40 and all(c in "0123456789abcdef" for c in SPEC_COMMIT)
 
 
 def test_abc_is_abstract() -> None:
@@ -26,23 +36,25 @@ def test_abc_is_abstract() -> None:
         Translator()  # type: ignore[abstract]
 
 
-def test_acme_translate_stamps_identifier() -> None:
+def test_acme_translate_stamps_identifier(fixture_doc: dict) -> None:
     t = AcmeTranslator()
     result = t.translate(
-        _raw({"id": "A-88213", "type": "fixture", "openbook": FIXTURE}),
+        _raw({"id": "A-88213", "type": "fixture", "openbook": fixture_doc}),
         source_id="acme-book",
     )
     assert isinstance(result, Documents)
     doc = result.documents[0]
     assert native_id(doc, "acme") == "A-88213"
+    # the vendor's other identifiers survive
+    assert {"propertyID": "sportradar", "value": "sr:match:8412480"} in doc["identifier"]
 
 
-def test_acme_uses_parsed_not_bytes() -> None:
+def test_acme_uses_parsed_not_bytes(fixture_doc: dict) -> None:
     t = AcmeTranslator()
     result = t.translate(
         b"this is not json",
         source_id="acme-book",
-        parsed={"id": "A-1", "type": "fixture", "openbook": FIXTURE},
+        parsed={"id": "A-1", "type": "fixture", "openbook": fixture_doc},
     )
     assert isinstance(result, Documents)
     assert native_id(result.documents[0], "acme") == "A-1"
@@ -54,22 +66,54 @@ def test_unmapped_quarantines_does_not_raise() -> None:
     result = t.translate(raw, source_id="acme-book")
     assert isinstance(result, Quarantine)
     assert result.raw == raw
-    assert result.reason.startswith("unmapped:")
+    assert result.reason == PARSE_ERROR
+    assert result.reason in REASONS
+    assert result.source_id == "acme-book"
+    assert result.adapter == "acme"
+    assert result.detail
 
 
-def test_market_has_no_identifier_quarantine() -> None:
+@pytest.mark.parametrize(
+    ("record", "detail"),
+    [
+        ({"type": "fixture", "openbook": {}}, "missing id"),
+        ({"id": "A-1", "openbook": {}}, "missing type"),
+        ({"id": "A-1", "type": "fixture"}, "missing openbook"),
+        ({"id": "A-1", "type": "nope", "openbook": {}}, "no identifier"),
+    ],
+)
+def test_malformed_records_quarantine_with_other(record: dict, detail: str) -> None:
+    result = AcmeTranslator().translate(_raw(record), source_id="acme-book")
+    assert isinstance(result, Quarantine)
+    assert result.reason == OTHER
+    assert detail in str(result.detail)
+
+
+def test_schema_invalid_quarantines(fixture_doc: dict) -> None:
+    broken = dict(fixture_doc)
+    del broken["startDate"]
+    result = AcmeTranslator().translate(
+        _raw({"id": "A-1", "type": "fixture", "openbook": broken}), source_id="acme-book"
+    )
+    assert isinstance(result, Quarantine)
+    assert result.reason == SCHEMA_INVALID
+    assert "startDate" in str(result.detail)
+
+
+def test_market_has_no_identifier_quarantine(market_doc: dict) -> None:
     t = AcmeTranslator()
     result = t.translate(
-        _raw({"id": "M-1", "type": "market", "openbook": MARKET}),
+        _raw({"id": "M-1", "type": "market", "openbook": market_doc}),
         source_id="acme-book",
     )
     assert isinstance(result, Quarantine)
-    assert "identifier" in result.reason
+    assert result.reason == OTHER
+    assert "identifier" in str(result.detail)
 
 
-def test_round_trip_native_id() -> None:
+def test_round_trip_native_id(fixture_doc: dict) -> None:
     t = AcmeTranslator()
-    inbound = {"id": "A-88213", "type": "fixture", "openbook": FIXTURE}
+    inbound = {"id": "A-88213", "type": "fixture", "openbook": fixture_doc}
     mapped = t.translate(_raw(inbound), source_id="acme-book")
     assert isinstance(mapped, Documents)
     back = t.reverse(mapped.documents[0])
@@ -82,10 +126,29 @@ def test_round_trip_native_id() -> None:
     assert native_id(again.documents[0], "acme") == "A-88213"
 
 
-def test_reverse_without_native_id_quarantines() -> None:
-    t = AcmeTranslator()
-    result = t.reverse(FIXTURE)
+def test_reverse_without_native_id_quarantines(fixture_doc: dict) -> None:
+    result = AcmeTranslator().reverse(fixture_doc)
     assert isinstance(result, Quarantine)
+    assert result.reason == OTHER
+
+
+def test_acme_sport_table_hit_and_gap(fixture_doc: dict) -> None:
+    body = {k: v for k, v in fixture_doc.items() if k != "sport"}
+    t = AcmeTranslator()
+    hit = t.translate(_raw({"id": "A-1", "type": "fixture", "sport": "SOCC", "openbook": body}), source_id="b")
+    assert isinstance(hit, Documents)
+    assert hit.documents[0]["sport"] == {"id": "sport:soccer", "name": "Soccer"}
+    assert "x_acmeSportId" not in hit.documents[0]
+    assert t.gaps.total == 0
+
+    miss = t.translate(_raw({"id": "A-2", "type": "fixture", "sport": "CURL", "openbook": body}), source_id="b")
+    assert isinstance(miss, Documents), miss
+    doc = miss.documents[0]
+    assert doc["sport"] == {"id": "sport:unknown", "name": "Unknown"}
+    assert doc["x_acmeSportId"] == "CURL"
+    report = t.gaps.report()
+    assert len(report) == 1 and report[0].kind == "sport" and report[0].vendor == "CURL" and report[0].count == 1
+    assert report[0].sample == "A-2"
 
 
 def test_entry_point_acme() -> None:
@@ -93,38 +156,6 @@ def test_entry_point_acme() -> None:
     assert t.name == "acme"
 
 
-def test_fetch_detects_spec_added_schema(monkeypatch: pytest.MonkeyPatch) -> None:
-    from openbook_translate import spec as spec_mod
-    from openbook_translate import update as update_mod
-
-    vendored = set(spec_mod.schema_names())
-    remote_names = vendored | {"wager.schema.json"}  # spec ships one we don't vendor
-
-    monkeypatch.setattr(
-        update_mod, "_get", lambda url: f"Version `{spec_mod.spec_version_stamp()}`\n"
-    )
-    monkeypatch.setattr(update_mod, "_remote_schema_names", lambda: remote_names)
-    monkeypatch.setattr(
-        update_mod,
-        "_get_bytes",
-        lambda url: (spec_mod.SCHEMA_DIR / url.rsplit("/", 1)[1]).read_bytes(),
-    )
-
-    problems = update_mod.check(fetch=True)
-    assert "wager.schema.json: in spec, not vendored" in problems
-
-
-def test_update_detects_stamp_drift(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    from openbook_translate import spec as spec_mod
-    from openbook_translate import update as update_mod
-
-    spec_root = tmp_path / "spec"
-    (spec_root / "spec").mkdir(parents=True)
-    (spec_root / "schema").mkdir()
-    (spec_root / "spec" / "openbook.md").write_text("Version `0.3.0-draft`\n", encoding="utf-8")
-    for path in spec_mod.SCHEMA_DIR.glob("*.json"):
-        (spec_root / "schema" / path.name).write_bytes(path.read_bytes())
-
-    monkeypatch.setattr(update_mod, "spec_version_stamp", lambda: "not-a-version")
-    problems = update_mod.check(spec_root=spec_root)
-    assert any("openbook-spec-version" in p for p in problems)
+def test_entry_point_unknown() -> None:
+    with pytest.raises(KeyError):
+        load("does-not-exist")

@@ -6,10 +6,58 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
+        with:
+          python-version: ${{ matrix.python-version }}
       - run: pip install -e '.[dev]'
-      - run: pytest -q
+      - run: pytest -q -W error
+
+  wheel-install:
+    name: wheel installs and imports (non-editable)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: build wheel
+        run: pip wheel . --no-deps -w dist
+      - name: install into a fresh venv outside the repo and use it
+        run: |
+          set -eu
+          VENV="$(mktemp -d)/venv"
+          python -m venv "$VENV"
+          "$VENV/bin/pip" install --quiet dist/*.whl
+          cd "$(mktemp -d)"
+          "$VENV/bin/python" -c "from openbook_translate import AcmeTranslator; from openbook_translate.spec import schema_names, spec_version_stamp; assert schema_names(); print(spec_version_stamp())"
+          "$VENV/bin/python" -c "
+          import json
+          from openbook_translate import AcmeTranslator, SPEC_VERSION, SPEC_COMMIT
+          from openbook_translate.types import Documents, Quarantine
+          from openbook_translate import vocab
+          from openbook_translate.envelope import heartbeat
+          from openbook_translate.spec import validate_envelope
+          assert 'sport:soccer' in vocab.SPORTS and vocab.MARKET_TYPES
+          assert validate_envelope(heartbeat('ci', 1)) == []
+          t = AcmeTranslator()
+          assert isinstance(t.translate(b'nope', source_id='ci'), Quarantine)
+          print('wheel ok', SPEC_VERSION, SPEC_COMMIT)
+          "
+          "$VENV/bin/openbook-translate" --help >/dev/null
+
+  update:
+    name: vendored schemas match spec main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e .
       - run: python3 -m openbook_translate update
