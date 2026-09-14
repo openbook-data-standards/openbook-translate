@@ -1,4 +1,13 @@
-from openbook_translate.adapter import Adapter, Inbound, Quarantine, ReverseOk, TranslateOk
-from openbook_translate.acme import AcmeAdapter
+"""Map one vendor record to OpenBook documents and back (Q96)."""
 
-__all__ = ["Adapter", "Inbound", "Quarantine", "ReverseOk", "TranslateOk", "AcmeAdapter"]
+from openbook_translate.abc import Translator
+from openbook_translate.acme import AcmeTranslator
+from openbook_translate.types import Documents, Quarantine, Vendor
+
+__all__ = [
+    "AcmeTranslator",
+    "Documents",
+    "Quarantine",
+    "Translator",
+    "Vendor",
+]

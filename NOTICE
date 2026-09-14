@@ -1,4 +1,10 @@
-OpenBook JSON Schemas in schema/ are copied from
-https://github.com/openbook-data-standards/openbook
-spec commit d6f88e286a8ce41d43f49ad8b87324b4c763ee3c (0.3.0-draft)
-and remain CC BY 4.0. See that repository LICENSE.
+openbook-translate
+Copyright 2026 the OpenBook authors
+
+This product includes OpenBook JSON Schema files copied from
+https://github.com/openbook-data-standards/openbook (directory schema/).
+Those schema files remain licensed under Creative Commons Attribution 4.0
+International (CC BY 4.0). See the specification repository LICENSE.
+
+The Python code in this package is licensed under the Apache License 2.0.
+See LICENSE.

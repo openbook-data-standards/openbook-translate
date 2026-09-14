@@ -1,0 +1,29 @@
+{
+  "openbookVersion": "0.3.0-draft",
+  "sequence": 104880,
+  "dateModified": "2026-09-19T14:05:00Z",
+  "fixture": "EVT-88213",
+  "marketType": "market:spread",
+  "segment": "segment:soccer:full-time",
+  "line": "-0.5",
+  "source": "bigbook",
+  "provenance": "observed",
+  "status": "open",
+  "limit": {
+    "amount": "500"
+  },
+  "outcomes": [
+    {
+      "side": "home",
+      "odds": "1.91",
+      "line": "-0.5",
+      "active": true
+    },
+    {
+      "side": "away",
+      "odds": "1.95",
+      "line": "0.5",
+      "active": true
+    }
+  ]
+}

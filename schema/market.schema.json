@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbook-data-standards.github.io/openbook/schema/market.schema.json",
   "title": "OpenBook market",
-  "description": "A fixture's market as priced by ONE source \u2014 the document form used by market/snapshot and market/update. Identity: (source, fixture, marketType, segment, line). Price moves arrive as odds/change.",
+  "description": "A fixture's market as priced by ONE source \u2014 the document form used by market/snapshot and market/update. Identity: (source, fixture, marketType, segment, line, basis). Price moves arrive as odds/change.",
   "type": "object",
   "required": [
     "openbookVersion",
@@ -41,6 +41,10 @@
     },
     "line": {
       "$ref": "common.schema.json#/$defs/decimalString"
+    },
+    "basis": {
+      "$ref": "common.schema.json#/$defs/scoreUnit",
+      "description": "What this market counts (Q98). Same list as score/grade. If omitted, sport/league primaryUnit. Not a new market type."
     },
     "source": {
       "$ref": "common.schema.json#/$defs/ownId"

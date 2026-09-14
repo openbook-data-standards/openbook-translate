@@ -5,17 +5,27 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "openbook-translate"
 version = "0.1.0"
-description = "OpenBook vendor translate/reverse kernel"
+description = "ABC for mapping one vendor record to OpenBook documents and back (Q96)"
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "Apache-2.0"}
-dependencies = ["jsonschema>=4.18", "referencing"]
+license = { text = "Apache-2.0" }
+authors = [{ name = "the OpenBook authors" }]
+dependencies = [
+  "jsonschema>=4.18",
+  "referencing",
+]
 
 [project.optional-dependencies]
 dev = ["pytest"]
 
+[project.scripts]
+openbook-translate = "openbook_translate.cli:main"
+
+[project.entry-points."openbook_translate.adapters"]
+acme = "openbook_translate.acme:AcmeTranslator"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.setuptools.package-data]
-openbook_translate = ["py.typed"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]

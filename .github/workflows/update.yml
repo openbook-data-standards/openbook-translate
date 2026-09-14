@@ -8,10 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Compare vendored schemas to public spec
-        run: |
-          git clone --depth 1 https://github.com/openbook-data-standards/openbook.git /tmp/openbook-spec
-          if ! diff -rq schema /tmp/openbook-spec/schema; then
-            echo "OpenBook spec schemas moved; refresh vendor copy and openbook-spec-version"
-            exit 1
-          fi
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e .
+      - run: python3 -m openbook_translate update

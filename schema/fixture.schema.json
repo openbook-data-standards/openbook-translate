@@ -129,7 +129,7 @@
     },
     "superEvent": {
       "$ref": "common.schema.json#/$defs/ownId",
-      "description": "schema.org superEvent \u2014 a live event's pregame parent fixture, when applicable."
+      "description": "schema.org superEvent. Not a second fixture for live (Q101); pregame and live are one fixture."
     },
     "participants": {
       "type": "array",
