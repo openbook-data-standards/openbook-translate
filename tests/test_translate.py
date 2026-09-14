@@ -93,6 +93,27 @@ def test_entry_point_acme() -> None:
     assert t.name == "acme"
 
 
+def test_fetch_detects_spec_added_schema(monkeypatch: pytest.MonkeyPatch) -> None:
+    from openbook_translate import spec as spec_mod
+    from openbook_translate import update as update_mod
+
+    vendored = set(spec_mod.schema_names())
+    remote_names = vendored | {"wager.schema.json"}  # spec ships one we don't vendor
+
+    monkeypatch.setattr(
+        update_mod, "_get", lambda url: f"Version `{spec_mod.spec_version_stamp()}`\n"
+    )
+    monkeypatch.setattr(update_mod, "_remote_schema_names", lambda: remote_names)
+    monkeypatch.setattr(
+        update_mod,
+        "_get_bytes",
+        lambda url: (spec_mod.SCHEMA_DIR / url.rsplit("/", 1)[1]).read_bytes(),
+    )
+
+    problems = update_mod.check(fetch=True)
+    assert "wager.schema.json: in spec, not vendored" in problems
+
+
 def test_update_detects_stamp_drift(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     from openbook_translate import spec as spec_mod
     from openbook_translate import update as update_mod

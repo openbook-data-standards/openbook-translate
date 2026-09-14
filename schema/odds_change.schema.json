@@ -49,32 +49,7 @@
             "type": "array",
             "minItems": 1,
             "items": {
-              "type": "object",
-              "required": [
-                "side"
-              ],
-              "properties": {
-                "side": {
-                  "$ref": "common.schema.json#/$defs/side"
-                },
-                "participant": {
-                  "$ref": "common.schema.json#/$defs/ownId",
-                  "description": "Required when side = participant."
-                },
-                "odds": {
-                  "$ref": "common.schema.json#/$defs/decimalOdds"
-                },
-                "line": {
-                  "$ref": "common.schema.json#/$defs/decimalString"
-                },
-                "active": {
-                  "type": "boolean"
-                }
-              },
-              "patternProperties": {
-                "^x_": {}
-              },
-              "additionalProperties": false
+              "$ref": "common.schema.json#/$defs/marketOutcome"
             }
           },
           "marketType": {

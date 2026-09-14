@@ -4,7 +4,12 @@ import json
 
 from openbook_translate.abc import Translator
 from openbook_translate.identifier import native_id, with_native_id
-from openbook_translate.spec import document_stem, schema_allows_identifier, validate_document
+from openbook_translate.spec import (
+    document_stem,
+    schema_allows,
+    schema_allows_identifier,
+    validate_document,
+)
 from openbook_translate.types import Documents, Quarantine, Vendor
 
 
@@ -35,7 +40,12 @@ class AcmeTranslator(Translator):
         if not schema_allows_identifier(stem):
             return Quarantine(raw=raw, reason=f"unmapped: {stem} has no identifier")
         document = with_native_id(body, self.name, native)
-        if "source" in document:
+        # Stamp the authoritative source on any document type that declares a
+        # `source` property (e.g. market), even if the vendor body omitted it —
+        # mirroring how the native identifier is always stamped. Types without a
+        # source property (fixture, publisher) are left untouched so we never add
+        # a field their schema forbids.
+        if schema_allows(stem, "source"):
             document["source"] = source_id
         errors = validate_document(stem, document)
         if errors:

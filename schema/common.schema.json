@@ -250,9 +250,346 @@
         "yes",
         "no",
         "participant",
-        "other"
+        "other",
+        "odd",
+        "even",
+        "none",
+        "home-or-draw",
+        "away-or-draw",
+        "home-or-away"
+      ],
+      "description": "Q105 extra tokens: odd, even, none, home-or-draw, away-or-draw, home-or-away. none is a listed selection (Q116). other is leftover."
+    },
+    "homeAwayDraw": {
+      "enum": [
+        "home",
+        "away",
+        "draw"
+      ],
+      "description": "HT/FT halfTime and fullTime only (Q109)."
+    },
+    "propOutcomePairing": {
+      "description": "Row rules Q110, Q112, Q114, Q119–Q121, Q126–Q131. Listed CS both totals; HT/FT both halves; plus-band is participant + atLeast, not line; yes/no player has player and not leftover other or outcome line; no mix of boards.",
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "halfTime"
+            ]
+          },
+          "then": {
+            "required": [
+              "fullTime"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "fullTime"
+            ]
+          },
+          "then": {
+            "required": [
+              "halfTime"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "homeTotal"
+            ]
+          },
+          "then": {
+            "required": [
+              "awayTotal"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "awayTotal"
+            ]
+          },
+          "then": {
+            "required": [
+              "homeTotal"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "atLeast"
+            ]
+          },
+          "then": {
+            "required": [
+              "participant"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "atLeast"
+            ]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "line"
+                  ]
+                },
+                {
+                  "required": [
+                    "homeTotal"
+                  ]
+                },
+                {
+                  "required": [
+                    "halfTime"
+                  ]
+                },
+                {
+                  "required": [
+                    "player"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "homeTotal"
+            ]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "halfTime"
+                  ]
+                },
+                {
+                  "required": [
+                    "player"
+                  ]
+                },
+                {
+                  "required": [
+                    "atLeast"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "halfTime"
+            ]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "homeTotal"
+                  ]
+                },
+                {
+                  "required": [
+                    "player"
+                  ]
+                },
+                {
+                  "required": [
+                    "atLeast"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "player"
+            ]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "homeTotal"
+                  ]
+                },
+                {
+                  "required": [
+                    "halfTime"
+                  ]
+                },
+                {
+                  "required": [
+                    "atLeast"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "player"
+            ]
+          },
+          "then": {
+            "properties": {
+              "side": {
+                "not": {
+                  "const": "other"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "player"
+            ],
+            "properties": {
+              "side": {
+                "enum": [
+                  "yes",
+                  "no"
+                ]
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "line"
+              ]
+            }
+          }
+        }
       ]
     },
+    "marketOutcome": {
+      "type": "object",
+      "required": [
+        "side"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x_": {}
+      },
+      "properties": {
+        "side": {
+          "$ref": "#/$defs/side"
+        },
+        "participant": {
+          "$ref": "#/$defs/ownId",
+          "description": "Required when side = participant. Listed winning margin always has this plus outcome line (Q113) or atLeast (Q120)."
+        },
+        "odds": {
+          "$ref": "#/$defs/decimalOdds"
+        },
+        "line": {
+          "$ref": "#/$defs/decimalString"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "homeTotal": {
+          "type": "number",
+          "description": "Listed correct-score home amount (Q105). JSON number like scores[].total. Pair with awayTotal (Q112)."
+        },
+        "awayTotal": {
+          "type": "number",
+          "description": "Listed correct-score away amount (Q105). Pair with homeTotal (Q112)."
+        },
+        "halfTime": {
+          "$ref": "#/$defs/homeAwayDraw"
+        },
+        "fullTime": {
+          "$ref": "#/$defs/homeAwayDraw"
+        },
+        "player": {
+          "$ref": "#/$defs/ownId",
+          "description": "Player over/under and yes/no player rows: OpenBook player id only (Q108, Q115, Q126, Q127)."
+        },
+        "atLeast": {
+          "type": "number",
+          "description": "Listed winning-margin plus-band floor (Q119). JSON number like homeTotal. 3 means 3 or more. Pair with participant (Q120). Not outcome line (Q121)."
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/propOutcomePairing"
+        }
+      ]
+    },
+    "gradeOutcome": {
+      "type": "object",
+      "required": [
+        "side",
+        "result"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "side": {
+          "$ref": "#/$defs/side"
+        },
+        "participant": {
+          "$ref": "#/$defs/ownId"
+        },
+        "line": {
+          "$ref": "#/$defs/decimalString"
+        },
+        "result": {
+          "$ref": "#/$defs/gradeResult"
+        },
+        "homeTotal": {
+          "type": "number"
+        },
+        "awayTotal": {
+          "type": "number"
+        },
+        "halfTime": {
+          "$ref": "#/$defs/homeAwayDraw"
+        },
+        "fullTime": {
+          "$ref": "#/$defs/homeAwayDraw"
+        },
+        "player": {
+          "$ref": "#/$defs/ownId"
+        },
+        "atLeast": {
+          "type": "number",
+          "description": "Listed winning-margin plus-band floor (Q119). JSON number like homeTotal. 3 means 3 or more. Pair with participant (Q120). Not outcome line (Q121)."
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/propOutcomePairing"
+        }
+      ]
+    },
+
     "provenance": {
       "enum": [
         "official",

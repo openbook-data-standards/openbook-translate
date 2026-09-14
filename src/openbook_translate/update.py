@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import json
 import urllib.error
 import urllib.request
+from collections.abc import Callable
 from pathlib import Path
 
 from openbook_translate.spec import (
+    REMOTE_SCHEMA_DIR_URL,
     REMOTE_SCHEMA_URL,
     REMOTE_SPEC_URL,
     SCHEMA_DIR,
@@ -26,42 +29,67 @@ def find_spec_root(start: Path | None = None) -> Path | None:
 def check(*, spec_root: Path | None = None, fetch: bool = False) -> list[str]:
     problems: list[str] = []
     stamp = spec_version_stamp()
+    local_names = set(schema_names())
+
+    # Both modes resolve to (remote spec version, the set of schema names the
+    # spec ships, a reader that returns one schema's bytes or None). The
+    # comparison below is then identical, so drift is detected symmetrically —
+    # including schemas added to or removed from the spec, not only edited ones.
+    remote_bytes: Callable[[str], bytes | None]
     if spec_root is not None:
         version_text = (spec_root / "spec" / "openbook.md").read_text(encoding="utf-8")
         remote_version = parse_spec_version(version_text)
         remote_dir = spec_root / "schema"
         remote_names = {p.name for p in remote_dir.glob("*.json")}
-        local_names = set(schema_names())
-        for name in sorted(local_names | remote_names):
-            local = SCHEMA_DIR / name
-            remote = remote_dir / name
-            if not local.is_file():
-                problems.append(f"{name}: in spec, not vendored")
-                continue
-            if not remote.is_file():
-                problems.append(f"{name}: vendored, not in spec")
-                continue
-            if local.read_bytes() != remote.read_bytes():
-                problems.append(f"{name}: differs from spec")
+
+        def remote_bytes(name: str) -> bytes | None:
+            path = remote_dir / name
+            return path.read_bytes() if path.is_file() else None
+
     elif fetch:
         version_text = _get(REMOTE_SPEC_URL)
         remote_version = parse_spec_version(version_text)
-        for name in schema_names():
+        remote_names = _remote_schema_names()
+
+        def remote_bytes(name: str) -> bytes | None:
             try:
-                body = _get_bytes(REMOTE_SCHEMA_URL.format(name=name))
-            except urllib.error.HTTPError as e:
-                problems.append(f"{name}: fetch {e.code}")
-                continue
-            if (SCHEMA_DIR / name).read_bytes() != body:
-                problems.append(f"{name}: differs from spec")
+                return _get_bytes(REMOTE_SCHEMA_URL.format(name=name))
+            except urllib.error.HTTPError:
+                return None
+
     else:
         raise ValueError("pass spec_root or fetch=True")
+
+    for name in sorted(local_names | remote_names):
+        if name not in remote_names:
+            problems.append(f"{name}: vendored, not in spec")
+            continue
+        if name not in local_names:
+            problems.append(f"{name}: in spec, not vendored")
+            continue
+        remote = remote_bytes(name)
+        if remote is None:
+            problems.append(f"{name}: could not read from spec")
+            continue
+        if (SCHEMA_DIR / name).read_bytes() != remote:
+            problems.append(f"{name}: differs from spec")
 
     if remote_version is None:
         problems.append("could not read spec version")
     elif remote_version != stamp:
         problems.append(f"openbook-spec-version {stamp!r} != spec {remote_version!r}")
     return problems
+
+
+def _remote_schema_names() -> set[str]:
+    entries = json.loads(_get(REMOTE_SCHEMA_DIR_URL))
+    if not isinstance(entries, list):
+        return set()
+    return {
+        e["name"]
+        for e in entries
+        if isinstance(e, dict) and str(e.get("name", "")).endswith(".json")
+    }
 
 
 def _get(url: str) -> str:

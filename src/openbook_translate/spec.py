@@ -19,6 +19,9 @@ REMOTE_SPEC_URL = (
 REMOTE_SCHEMA_URL = (
     "https://raw.githubusercontent.com/openbook-data-standards/openbook/main/schema/{name}"
 )
+REMOTE_SCHEMA_DIR_URL = (
+    "https://api.github.com/repos/openbook-data-standards/openbook/contents/schema?ref=main"
+)
 
 
 def spec_version_stamp() -> str:
@@ -54,13 +57,17 @@ def _registry() -> tuple[dict[str, dict], Registry]:
     return schemas, registry
 
 
-def schema_allows_identifier(stem: str) -> bool:
+def schema_allows(stem: str, prop: str) -> bool:
+    """True if the document schema for ``stem`` declares ``prop`` as a property."""
     schemas, _ = _registry()
-    name = f"{stem}.schema.json"
-    schema = schemas.get(name)
+    schema = schemas.get(f"{stem}.schema.json")
     if schema is None:
         return False
-    return "identifier" in schema.get("properties", {})
+    return prop in schema.get("properties", {})
+
+
+def schema_allows_identifier(stem: str) -> bool:
+    return schema_allows(stem, "identifier")
 
 
 def validate_document(stem: str, document: dict) -> list[str]:
