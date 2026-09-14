@@ -1,0 +1,25 @@
+{
+  "adapter": "acme",
+  "sport": [
+    { "vendor": "SOCC", "id": "sport:soccer", "name": "Soccer" },
+    { "vendor": "BASK", "id": "sport:basketball", "name": "Basketball" },
+    { "vendor": "TENN", "id": "sport:tennis", "name": "Tennis" }
+  ],
+  "segment": [
+    { "vendor": "FT", "id": "segment:soccer:full-time" },
+    { "vendor": "1H", "id": "segment:soccer:1st-half" },
+    { "vendor": "2H", "id": "segment:soccer:2nd-half" }
+  ],
+  "market_type": [
+    { "vendor": "ML", "id": "market:moneyline" },
+    { "vendor": "SPRD", "id": "market:spread" },
+    { "vendor": "TOT", "id": "market:total" }
+  ],
+  "side": [
+    { "vendor": "1", "id": "home" },
+    { "vendor": "2", "id": "away" },
+    { "vendor": "X", "id": "draw" },
+    { "vendor": "O", "id": "over" },
+    { "vendor": "U", "id": "under" }
+  ]
+}
