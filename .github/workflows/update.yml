@@ -1,0 +1,17 @@
+name: update
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare vendored schemas to public spec
+        run: |
+          git clone --depth 1 https://github.com/openbook-data-standards/openbook.git /tmp/openbook-spec
+          if ! diff -rq schema /tmp/openbook-spec/schema; then
+            echo "OpenBook spec schemas moved; refresh vendor copy and openbook-spec-version"
+            exit 1
+          fi
