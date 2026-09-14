@@ -1,0 +1,19 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "openbookVersion": "0.3.0-draft",
+  "id": "P-77",
+  "sequence": 104000,
+  "dateModified": "2026-09-01T09:00:00Z",
+  "participantType": "individual",
+  "sport": "sport:tennis",
+  "territory": "ES",
+  "name": "Carlos Alcaraz",
+  "shortName": "C. Alcaraz",
+  "familyName": "Alcaraz",
+  "givenName": "Carlos",
+  "alternateName": [
+    "Carlos Alcaraz Garfia"
+  ],
+  "sameAs": "https://www.wikidata.org/entity/Q63155283"
+}

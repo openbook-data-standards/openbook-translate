@@ -1,0 +1,170 @@
+{
+  "openbookVersion": "0.3.0-draft",
+  "sequence": 104871,
+  "datePublished": "2026-09-19T14:37:12Z",
+  "publisher": "acme-feeds",
+  "object": "odds",
+  "action": "change",
+  "sport": "soccer",
+  "id": "EVT-88213",
+  "changes": {
+    "markets": [
+      {
+        "marketType": "market:moneyline",
+        "segment": "segment:soccer:full-time",
+        "status": "open",
+        "source": "pinnacle",
+        "provenance": "licensed",
+        "outcomes": [
+          {
+            "side": "home",
+            "odds": "2.1"
+          },
+          {
+            "side": "away",
+            "odds": "3.25"
+          }
+        ]
+      },
+      {
+        "marketType": "market:total",
+        "segment": "segment:soccer:full-time",
+        "line": "2.5",
+        "basis": "corners",
+        "source": "acme-book",
+        "provenance": "official",
+        "outcomes": [
+          {
+            "side": "over",
+            "odds": "1.95"
+          }
+        ]
+      },
+      {
+        "marketType": "market:spread",
+        "segment": "segment:soccer:full-time",
+        "status": "suspended",
+        "source": "bigbook",
+        "provenance": "observed",
+        "outcomes": [
+          {
+            "side": "home",
+            "line": "-0.5",
+            "active": false
+          },
+          {
+            "side": "away",
+            "line": "0.5",
+            "active": false
+          }
+        ]
+      },
+      {
+        "marketType": "market:correct-score",
+        "segment": "segment:soccer:full-time",
+        "basis": "corners",
+        "source": "acme-book",
+        "provenance": "official",
+        "outcomes": [
+          {
+            "side": "home",
+            "homeTotal": 1,
+            "awayTotal": 0,
+            "odds": "8.5"
+          },
+          {
+            "side": "other",
+            "odds": "1.12"
+          }
+        ]
+      },
+      {
+        "marketType": "market:half-time-full-time",
+        "segment": "segment:soccer:full-time",
+        "source": "acme-book",
+        "provenance": "official",
+        "outcomes": [
+          {
+            "side": "draw",
+            "halfTime": "home",
+            "fullTime": "draw",
+            "odds": "15.0"
+          }
+        ]
+      },
+      {
+        "marketType": "market:player-points",
+        "segment": "segment:soccer:full-time",
+        "line": "1.5",
+        "source": "acme-book",
+        "provenance": "official",
+        "outcomes": [
+          {
+            "side": "over",
+            "player": "PL-9",
+            "odds": "1.85"
+          },
+          {
+            "side": "under",
+            "player": "PL-9",
+            "odds": "1.95"
+          }
+        ]
+      },
+      {
+        "marketType": "market:double-chance",
+        "segment": "segment:soccer:full-time",
+        "source": "pinnacle",
+        "provenance": "licensed",
+        "outcomes": [
+          {
+            "side": "home-or-draw",
+            "odds": "1.25"
+          }
+        ]
+      },
+      {
+        "marketType": "market:winning-margin",
+        "segment": "segment:soccer:full-time",
+        "source": "acme-book",
+        "provenance": "official",
+        "outcomes": [
+          {
+            "side": "participant",
+            "participant": "T-3",
+            "line": "1",
+            "odds": "4.50"
+          },
+          {
+            "side": "participant",
+            "participant": "T-11",
+            "atLeast": 3,
+            "odds": "6.00"
+          },
+          {
+            "side": "other",
+            "odds": "1.40"
+          }
+        ]
+      },
+      {
+        "marketType": "market:player-anytime-scorer",
+        "segment": "segment:soccer:full-time",
+        "source": "acme-book",
+        "provenance": "official",
+        "outcomes": [
+          {
+            "side": "yes",
+            "player": "PL-9",
+            "odds": "3.40"
+          },
+          {
+            "side": "yes",
+            "player": "PL-11",
+            "odds": "4.20"
+          }
+        ]
+      }
+    ]
+  }
+}

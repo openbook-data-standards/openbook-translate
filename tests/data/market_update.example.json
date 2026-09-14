@@ -1,0 +1,22 @@
+{
+  "openbookVersion": "0.3.0-draft",
+  "sequence": 105330,
+  "datePublished": "2026-09-19T14:41:03Z",
+  "publisher": "acme-feeds",
+  "object": "market",
+  "action": "update",
+  "sport": "soccer",
+  "id": "EVT-88213",
+  "msgType": "update",
+  "reason": "goal",
+  "references": [
+    104871
+  ],
+  "changes": {
+    "marketType": "market:spread",
+    "segment": "segment:soccer:full-time",
+    "line": "-0.5",
+    "source": "bigbook",
+    "status": "open"
+  }
+}

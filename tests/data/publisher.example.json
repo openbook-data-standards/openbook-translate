@@ -1,0 +1,29 @@
+{
+  "openbookVersion": "0.3.0-draft",
+  "id": "acme-feeds",
+  "sequence": 1,
+  "dateModified": "2026-09-19T12:00:00Z",
+  "name": "Acme Feeds",
+  "inLanguage": "en",
+  "baseCurrency": "GBP",
+  "heartbeatMs": 5000,
+  "ttl": 60,
+  "url": "https://example.invalid/acme-feeds",
+  "sources": [
+    {
+      "id": "acme-book",
+      "name": "Acme Book",
+      "sourceType": "sportsbook"
+    },
+    {
+      "id": "pinnacle",
+      "name": "Pinnacle",
+      "sourceType": "sportsbook"
+    },
+    {
+      "id": "bigbook",
+      "name": "Big Book",
+      "sourceType": "sportsbook"
+    }
+  ]
+}

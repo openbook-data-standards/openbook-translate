@@ -1,0 +1,11 @@
+{
+  "openbookVersion": "0.3.0-draft",
+  "sequence": 104900,
+  "datePublished": "2026-09-19T14:37:20Z",
+  "publisher": "acme-feeds",
+  "object": "fixture",
+  "action": "snapshotComplete",
+  "sport": "soccer",
+  "id": "EVT-88213",
+  "changes": {}
+}

@@ -1,0 +1,10 @@
+{
+  "openbookVersion": "0.3.0-draft",
+  "sequence": 104901,
+  "datePublished": "2026-09-19T14:37:25Z",
+  "publisher": "acme-feeds",
+  "object": "publisher",
+  "action": "heartbeat",
+  "sport": "unknown",
+  "changes": {}
+}

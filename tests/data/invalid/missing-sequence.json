@@ -1,0 +1,12 @@
+{
+  "openbookVersion": "0.3.0-draft",
+  "datePublished": "2026-09-19T13:05:00Z",
+  "publisher": "acme-feeds",
+  "object": "fixture",
+  "action": "update",
+  "sport": "soccer",
+  "id": "EVT-88213",
+  "changes": {
+    "eventStatus": "scheduled"
+  }
+}
